@@ -1,6 +1,7 @@
 package post
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"net/url"
@@ -8,6 +9,7 @@ import (
 
 // Handler proceses
 type Handler struct {
+	DB *sql.DB
 }
 
 // Request contains URL to shorten

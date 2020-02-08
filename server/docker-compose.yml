@@ -1,0 +1,19 @@
+version: '3.3'
+
+services:
+  # url-shortener:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   environment: 
+  #     - DB_CONNECTION_STRING=root@tcp(mysql:3306)/url-shortener?parseTime=true
+
+  mysql:
+    image: mysql:5.7
+    ports:
+      - 3306:3306 
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_ROOT_HOST=%
+      - MYSQL_DATABASE=url-shortener
