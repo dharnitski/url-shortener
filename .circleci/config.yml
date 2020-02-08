@@ -3,10 +3,10 @@ jobs:
   server:
     docker:
       - image: circleci/golang:1.13
-    working_directory: /code/server
+    working_directory: /usr/url-shortener/server
     steps:
       - checkout:
-          path: /code
+          path: /usr/url-shortener
       - run:
           name: "Generate Coverage"
           command: |
