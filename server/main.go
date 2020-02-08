@@ -1,8 +1,6 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -10,11 +8,10 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/gorilla/mux"
 
+	"github.com/dharnitski/url-shortener/persist"
 	"github.com/dharnitski/url-shortener/post"
 )
 
@@ -61,35 +58,6 @@ func (h spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.FileServer(http.Dir(h.staticPath)).ServeHTTP(w, r)
 }
 
-func connectAndMigrate(connectionString string) (*sql.DB, error) {
-	db, err := sql.Open("mysql", connectionString)
-	if err != nil {
-		return db, err
-	}
-
-	driver, err := mysql.WithInstance(db, &mysql.Config{})
-	if err != nil {
-		return db, err
-	}
-
-	migration, err := migrate.NewWithDatabaseInstance("file://./migrations", "mysql", driver)
-	if err != nil {
-		return db, err
-	}
-
-	err = migration.Up()
-	if err != nil {
-		// should not fail if Database Schema is up to date or it is currently updated (and locked) by other instance
-		if err == migrate.ErrNoChange || err == migrate.ErrLocked {
-			fmt.Print("DB Migration: " + err.Error())
-			return db, nil
-		}
-		return db, err
-	}
-
-	return db, nil
-}
-
 func main() {
 	connectionString, exists := os.LookupEnv("DB_CONNECTION_STRING")
 	if !exists {
@@ -97,7 +65,7 @@ func main() {
 	}
 
 	// db implements connection pool and it is safe to use in multiple goroutines
-	db, err := connectAndMigrate(connectionString)
+	db, err := persist.ConnectAndMigrate(connectionString)
 	if err != nil {
 		log.Fatal(err)
 	}
