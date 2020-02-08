@@ -17,7 +17,7 @@ jobs:
       - run:
           name: "Generate Coverage"
           command: |
-            cd server && go test -coverpkg=./... -coverprofile=coverage.txt ./...
+            cd server && go test -tags sql -coverpkg=./... -coverprofile=coverage.txt ./...
       - run:
           name: "Publish Coverage to Coveralls.io"
           command: |
