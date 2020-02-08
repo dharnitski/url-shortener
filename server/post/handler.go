@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/url"
+
+	"github.com/dharnitski/url-shortener/shortener"
 )
 
 // Handler proceses
@@ -52,7 +54,11 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	shortenURL := "qwe"
+	shortenURL, err := h.saveURL(req.URL)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	response := Response{
 		ShortenURL: shortenURL,
@@ -69,5 +75,15 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) saveURL(link string) (string, error) {
-	return "", nil
+	result, err := h.DB.Exec("INSERT INTO links (url) VALUES(?)", link)
+	if err != nil {
+		return "", err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return "", err
+	}
+
+	return shortener.IntToShort(id), nil
 }

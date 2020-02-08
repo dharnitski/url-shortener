@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -15,7 +16,12 @@ import (
 
 func TestPostHandler(t *testing.T) {
 	t.Parallel()
-	sut := post.Handler{}
+	db, sqlMock, err := sqlmock.New()
+	require.NoError(t, err)
+	sqlMock.ExpectExec(`INSERT INTO links \(url\) VALUES\(\?\)`).
+		WithArgs("https://github.com/").
+		WillReturnResult(sqlmock.NewResult(42, 1))
+	sut := post.Handler{DB: db}
 
 	r, err := http.NewRequest(http.MethodPost, "https://example.com/", bytes.NewBufferString(`{"url": "https://github.com/"}`))
 	require.NoError(t, err)
@@ -25,7 +31,7 @@ func TestPostHandler(t *testing.T) {
 	assert.Equal(t, 200, w.Code)
 	body, err := ioutil.ReadAll(w.Body)
 	require.NoError(t, err)
-	assert.Equal(t, `{"shortenUrl":"qwe"}`, string(body))
+	assert.Equal(t, `{"shortenUrl":"G"}`, string(body))
 }
 
 func TestPostHandlerInvalidInput(t *testing.T) {
