@@ -3,19 +3,17 @@ jobs:
   server:
     docker:
       - image: circleci/golang:1.13
-    working_directory: /my-app/server
     steps:
-      - checkout:
-          path: /my-app
+      - checkout
       - run:
           name: "Generate Coverage"
           command: |
-            go test -coverpkg=./... -coverprofile=coverage.txt ./...
+            cd /server && go test -coverpkg=./... -coverprofile=coverage.txt ./...
       - run:
           name: "Publish Coverage to Coveralls.io"
           command: |
             go get github.com/mattn/goveralls
-            goveralls -coverprofile=coverage.txt -service semaphore -repotoken $COVERALLS_TOKEN
+            cd /server && goveralls -coverprofile=coverage.txt -service semaphore -repotoken $COVERALLS_TOKEN
 workflows:
   version: 2
   build_and_test:
