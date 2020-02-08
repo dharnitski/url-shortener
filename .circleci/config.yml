@@ -16,3 +16,8 @@ jobs:
           command: |
             go get github.com/mattn/goveralls
             goveralls -coverprofile=coverage.txt -service semaphore -repotoken $COVERALLS_TOKEN
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - server
