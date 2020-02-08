@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -9,6 +8,8 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+
+	"github.com/dharnitski/url-shortener/post"
 )
 
 // spaHandler implements the http.Handler interface, so we can use it
@@ -57,10 +58,7 @@ func (h spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func main() {
 	router := mux.NewRouter()
 
-	router.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
-		// an example API handler
-		json.NewEncoder(w).Encode(map[string]bool{"ok": true})
-	})
+	router.Handle("/api/post", post.Handler{}).Methods("POST")
 
 	spa := spaHandler{staticPath: "ui", indexPath: "index.html"}
 	router.PathPrefix("/").Handler(spa)
