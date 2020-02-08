@@ -66,5 +66,8 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
+}
 
+func (h Handler) saveURL(link string) (string, error) {
+	return "", nil
 }
