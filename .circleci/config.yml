@@ -30,28 +30,29 @@ jobs:
             go get github.com/mattn/goveralls
             cd server && goveralls -coverprofile=coverage.txt -service semaphore -repotoken $COVERALLS_REPO_TOKEN
   client:
-    working_directory: ~/my-project
+    working_directory: ~/url-shortener/client
     docker:
       - image: circleci/node:10-browsers
     steps:
-      - checkout
+      - checkout:
+          path: ~/url-shortener
       - run: sudo npm install -g @angular/cli
       - restore_cache:
-          key: url-shortener-client-{{ .Branch }}-{{ checksum "client/package-lock.json" }}
+          key: url-shortener-client-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run: npm install
       - save_cache:
-          key: url-shortener-client-{{ .Branch }}-{{ checksum "client/package-lock.json" }}
+          key: url-shortener-client-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
-            - "client/node_modules"
+            - "node_modules"
       - run:
           name: Lint
-          command: cd client && npm run ng lint
+          command: npm run ng lint
       - run:
           name: Unit Test
-          command: cd client && npm run test:ci
+          command: npm run test:ci
       - run:
           name: Coveralls
-          command: cd client && cat ./coverage/url-shortener/lcov.info  | ./node_modules/coveralls/bin/coveralls.js
+          command: cat ./coverage/url-shortener/lcov.info  | ./node_modules/coveralls/bin/coveralls.js
 workflows:
   version: 2
   build_and_test:
