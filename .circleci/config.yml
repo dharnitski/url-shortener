@@ -51,9 +51,10 @@ jobs:
       - run:
           name: Unit Test
           command: npm run test:ci
-      - run:
-          name: Coveralls
-          command: cat ./coverage/url-shortener/lcov.info  | ./node_modules/coveralls/bin/coveralls.js
+      # coverage is not linked with sources in coveralls - https://coveralls.io/builds/28616043
+      # - run:
+      #     name: Coveralls
+      #     command: cat ./coverage/url-shortener/lcov.info  | ./node_modules/coveralls/bin/coveralls.js
 workflows:
   version: 2
   build_and_test:
