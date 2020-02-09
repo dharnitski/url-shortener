@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
@@ -15,6 +16,12 @@ func ConnectAndMigrate(connectionString string) (*sql.DB, error) {
 	db, err := sql.Open("mysql", connectionString)
 	if err != nil {
 		return db, err
+	}
+
+	err = retryConnection(db)
+	if err != nil {
+		db.Close()
+		return nil, err
 	}
 
 	driver, err := mysql.WithInstance(db, &mysql.Config{})
@@ -44,4 +51,21 @@ func ConnectAndMigrate(connectionString string) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func retryConnection(db *sql.DB) error {
+	interval := 5 * time.Second
+	// number of retries to wait for 60 sec
+	retries := 60 * time.Second / interval
+	var err error
+	for i := 0; i < int(retries); i++ {
+		err = db.Ping()
+		if err == nil {
+			fmt.Println("Database Connected")
+			return nil
+		}
+		fmt.Printf("could not connect to database, retrying: %v\n", err)
+		time.Sleep(interval)
+	}
+	return err
 }
