@@ -1,10 +1,11 @@
 <div class="container">
   <mat-form-field appearance="fill" class="user-input">
     <mat-label>Enter or Paste URL</mat-label>
-    <textarea matInput></textarea>
+    <textarea matInput #url></textarea>
   </mat-form-field>
   <button mat-raised-button matTooltip="You can generate short URL that redirects to original link"
-    matTooltipPosition="below" color="primary">
+    matTooltipPosition="below" color="primary" (click)="onClick(url.value)">
     Get Shorten
   </button>
 </div>
+<p>{{shorten}}</p>
