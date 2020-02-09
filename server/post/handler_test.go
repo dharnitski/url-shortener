@@ -21,7 +21,7 @@ func TestPostHandler(t *testing.T) {
 	sqlMock.ExpectExec(`INSERT INTO links \(url\) VALUES\(\?\)`).
 		WithArgs("https://github.com/").
 		WillReturnResult(sqlmock.NewResult(42, 1))
-	sut := post.Handler{DB: db}
+	sut := post.Handler{DB: db, UIDomain: "http://localhost:8080/"}
 
 	r, err := http.NewRequest(http.MethodPost, "https://example.com/", bytes.NewBufferString(`{"url": "https://github.com/"}`))
 	require.NoError(t, err)
@@ -31,7 +31,7 @@ func TestPostHandler(t *testing.T) {
 	assert.Equal(t, 200, w.Code)
 	body, err := ioutil.ReadAll(w.Body)
 	require.NoError(t, err)
-	assert.Equal(t, `{"shortenUrl":"G"}`, string(body))
+	assert.Equal(t, `{"shortenUrl":"http://localhost:8080/G"}`, string(body))
 }
 
 func TestPostHandlerInvalidInput(t *testing.T) {

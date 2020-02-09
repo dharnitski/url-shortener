@@ -64,6 +64,11 @@ func main() {
 	if !exists {
 		log.Fatal("requires env variable DB_CONNECTION_STRING")
 	}
+	// App hosting domain with protocol, port, and slash - http://localhost:8080/
+	uiDomain, exists := os.LookupEnv("UI_DOMAIN")
+	if !exists {
+		log.Fatal("requires env variable UI_DOMAIN")
+	}
 
 	// db implements connection pool and it is safe to use in multiple goroutines
 	db, err := persist.ConnectAndMigrate(connectionString)
@@ -75,7 +80,7 @@ func main() {
 	router := mux.NewRouter()
 
 	// register new URL
-	router.Handle("/api/post", post.Handler{DB: db}).Methods("POST")
+	router.Handle("/api/post", post.Handler{DB: db, UIDomain: uiDomain}).Methods("POST")
 	// return full url by its shorten form
 	router.Handle("/api/get/{shorten}", get.Handler{DB: db}).Methods("GET")
 

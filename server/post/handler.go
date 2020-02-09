@@ -3,6 +3,7 @@ package post
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 
@@ -12,6 +13,8 @@ import (
 // Handler proceses
 type Handler struct {
 	DB *sql.DB
+	// App hosting domain with protocol, port, and slash - http://localhost:8080/
+	UIDomain string
 }
 
 // Request contains URL to shorten
@@ -85,5 +88,6 @@ func (h Handler) saveURL(link string) (string, error) {
 		return "", err
 	}
 
-	return shortener.IntToShort(id), nil
+	shortened := shortener.IntToShort(id)
+	return fmt.Sprintf("%s%s", h.UIDomain, shortened), nil
 }

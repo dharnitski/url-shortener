@@ -21,4 +21,4 @@
 
 1. Build Client app as described in `/client/README.md`
 2. Start DB as described above
-3. `DB_CONNECTION_STRING="root@tcp(localhost:3306)/url-shortener" go run main.go`
+3. `DB_CONNECTION_STRING="root@tcp(localhost:3306)/url-shortener" UI_DOMAIN="http://localhost:8080/"  go run main.go`
