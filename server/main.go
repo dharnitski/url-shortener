@@ -11,6 +11,7 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/gorilla/mux"
 
+	"github.com/dharnitski/url-shortener/get"
 	"github.com/dharnitski/url-shortener/persist"
 	"github.com/dharnitski/url-shortener/post"
 )
@@ -73,8 +74,12 @@ func main() {
 
 	router := mux.NewRouter()
 
+	// register new URL
 	router.Handle("/api/post", post.Handler{DB: db}).Methods("POST")
+	// return full url by its shorten form
+	router.Handle("/api/get/{shorten}", get.Handler{DB: db}).Methods("GET")
 
+	// host SPA application
 	spa := spaHandler{staticPath: "ui", indexPath: "index.html"}
 	router.PathPrefix("/").Handler(spa)
 
