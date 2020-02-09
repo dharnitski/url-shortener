@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Service } from './service';
+import { Service } from './app.service';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +14,7 @@ export class AppComponent {
   }
 
   onClick(url: string) {
-    this.service.shorten(url).subscribe(shorten => this.shorten = shorten.shortenUrl);
+    this.service.shorten(url)
+      .subscribe(response => this.shorten = response.shortenUrl);
   }
 }
