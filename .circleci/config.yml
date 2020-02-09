@@ -39,10 +39,10 @@ jobs:
       - checkout:
           path: ~/url-shortener
       - restore_cache:
-          key: url-shortener-client-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: url-shortener-client-{{ checksum "package-lock.json" }}
       - run: npm install
       - save_cache:
-          key: url-shortener-client-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: url-shortener-client-{{ checksum "package-lock.json" }}
           paths:
             - "node_modules"
       - run:
