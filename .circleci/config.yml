@@ -35,6 +35,7 @@ jobs:
       - image: circleci/node:10-browsers
     steps:
       - checkout
+      - run: npm install -g @angular/cli
       - restore_cache:
           key: url-shortener-client-{{ .Branch }}-{{ checksum "client/package-lock.json" }}
       - run: npm install
