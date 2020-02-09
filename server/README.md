@@ -16,3 +16,9 @@
 
 1. Start DB as described above
 2. `go test ./...  -tags sql -count=1`
+
+## Run App
+
+1. Build Client app as described in `/client/README.md`
+2. Start DB as described above
+3. `DB_CONNECTION_STRING="root@tcp(localhost:3306)/url-shortener" go run main.go`

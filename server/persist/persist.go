@@ -3,6 +3,7 @@ package persist
 import (
 	"database/sql"
 	"fmt"
+	"os"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
@@ -21,7 +22,13 @@ func ConnectAndMigrate(connectionString string) (*sql.DB, error) {
 		return db, err
 	}
 
-	migration, err := migrate.NewWithDatabaseInstance("file://../migrations", "mysql", driver)
+	// current folder is moving depending on execution scenario
+	migrationsFolder := "./migrations" // path to migrations at run time
+	if _, err := os.Stat(migrationsFolder); os.IsNotExist(err) {
+		migrationsFolder = "../migrations" // path to migrations for tests
+	}
+
+	migration, err := migrate.NewWithDatabaseInstance(fmt.Sprintf("file://%s", migrationsFolder), "mysql", driver)
 	if err != nil {
 		return db, err
 	}
