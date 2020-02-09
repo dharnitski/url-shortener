@@ -16,6 +16,10 @@ export class AppComponent {
   onClick(url: string) {
     this.shorten = '';
     this.service.shorten(url)
-      .subscribe(response => this.shorten = response.shortenUrl);
+      .subscribe(
+        response => this.shorten = response.shortenUrl,
+        err => this.service.showSnackbar(err.error, null, 5000),
+        () => console.log('posted!')
+      );
   }
 }
