@@ -14,6 +14,7 @@ export class AppComponent {
   }
 
   onClick(url: string) {
+    this.shorten = '';
     this.service.shorten(url)
       .subscribe(response => this.shorten = response.shortenUrl);
   }

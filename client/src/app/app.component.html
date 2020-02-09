@@ -7,5 +7,6 @@
     matTooltipPosition="below" color="primary" (click)="onClick(url.value)">
     Get Shorten
   </button>
+  <p *ngIf="shorten">Try it: <a href={{shorten}} target="_blank">{{shorten}}</a></p>
 </div>
-<p>{{shorten}}</p>
+
