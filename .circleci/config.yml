@@ -1,6 +1,7 @@
 version: 2
 jobs:
   server:
+    working_directory: ~/url-shortener/server
     docker:
       - image: circleci/golang:1.13
       - image: circleci/mysql:5.7
@@ -11,7 +12,8 @@ jobs:
           - MYSQL_ROOT_PASSWORD=
           - MYSQL_DATABASE=url-shortener
     steps:
-      - checkout
+      - checkout:
+          path: ~/url-shortener
       - run:
           name: install dockerize
           command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
@@ -23,12 +25,12 @@ jobs:
       - run:
           name: "Generate Coverage"
           command: |
-            cd server && go test -tags sql -coverpkg=./... -coverprofile=coverage.txt ./...
+            go test -tags sql -coverpkg=./... -coverprofile=coverage.txt ./...
       - run:
           name: "Publish Coverage to Coveralls.io"
           command: |
             go get github.com/mattn/goveralls
-            cd server && goveralls -coverprofile=coverage.txt -service semaphore -repotoken $COVERALLS_REPO_TOKEN
+            goveralls -coverprofile=coverage.txt -service semaphore -repotoken $COVERALLS_REPO_TOKEN
   client:
     working_directory: ~/url-shortener/client
     docker:
