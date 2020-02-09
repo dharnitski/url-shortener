@@ -24,20 +24,20 @@ func TestPostHandler(t *testing.T) {
 	sqlMock.ExpectQuery(`select url from links where id = ?`).
 		WithArgs(42).
 		WillReturnRows(rows)
-	sut := get.Handler{DB: db}
+	sut := get.Handler{DB: db, UIDomain: "http://localhost:8080/"}
 
 	router := mux.NewRouter()
-	router.Handle("/api/get/{shorten}", sut)
+	router.Handle("/{shorten}", sut)
 
-	r, err := http.NewRequest(http.MethodGet, "https://example.com/api/get/G", nil)
+	r, err := http.NewRequest(http.MethodGet, "https://example.com/G", nil)
 	require.NoError(t, err)
 	w := httptest.NewRecorder()
 
 	router.ServeHTTP(w, r)
-	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, 302, w.Code)
 	body, err := ioutil.ReadAll(w.Body)
 	require.NoError(t, err)
-	assert.Equal(t, `{"url":"G"}`, string(body))
+	assert.Equal(t, "<a href=\"http://localhost:8080/G\">Found</a>.\n\n", string(body))
 }
 
 func TestPostHandler404(t *testing.T) {
@@ -51,9 +51,9 @@ func TestPostHandler404(t *testing.T) {
 	sut := get.Handler{DB: db}
 
 	router := mux.NewRouter()
-	router.Handle("/api/get/{shorten}", sut)
+	router.Handle("/{shorten}", sut)
 
-	r, err := http.NewRequest(http.MethodGet, "https://example.com/api/get/G", nil)
+	r, err := http.NewRequest(http.MethodGet, "https://example.com/G", nil)
 	require.NoError(t, err)
 	w := httptest.NewRecorder()
 
@@ -74,9 +74,9 @@ func TestPostHandlerDbError(t *testing.T) {
 	sut := get.Handler{DB: db}
 
 	router := mux.NewRouter()
-	router.Handle("/api/get/{shorten}", sut)
+	router.Handle("/{shorten}", sut)
 
-	r, err := http.NewRequest(http.MethodGet, "https://example.com/api/get/G", nil)
+	r, err := http.NewRequest(http.MethodGet, "https://example.com/G", nil)
 	require.NoError(t, err)
 	w := httptest.NewRecorder()
 

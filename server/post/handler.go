@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/dharnitski/url-shortener/shortener"
 )
@@ -54,6 +55,13 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// validate URL scheme
 	if parsed.Scheme != "http" && parsed.Scheme != "https" {
 		http.Error(w, "only web links supported", http.StatusBadRequest)
+		return
+	}
+
+	// infinite redirect loop prevention
+	// case insensitive strings comparison to match GOOGLE.COM and google.com
+	if strings.HasPrefix(strings.ToLower(req.URL), strings.ToLower(h.UIDomain)) {
+		http.Error(w, "links to this site are not supported to prevent infinite redirects", http.StatusBadRequest)
 		return
 	}
 

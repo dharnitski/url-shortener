@@ -60,10 +60,18 @@ func TestPostHandlerInvalidInput(t *testing.T) {
 			`{"url": "ftp://github.com/"}`,
 			"only web links supported\n",
 		},
+		{
+			`{"url": "http://localhost:8080/some"}`,
+			"links to this site are not supported to prevent infinite redirects\n",
+		},
+		{
+			`{"url": "http://locAlhost:8080/some"}`,
+			"links to this site are not supported to prevent infinite redirects\n",
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.input, func(t *testing.T) {
-			sut := post.Handler{}
+			sut := post.Handler{UIDomain: "http://localhost:8080/"}
 
 			r, err := http.NewRequest(http.MethodPost, "https://example.com/", bytes.NewBufferString(test.input))
 			require.NoError(t, err)

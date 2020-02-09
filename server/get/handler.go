@@ -1,9 +1,9 @@
+// Package get implements handler that returns redirects to full url or 404 for shorten path
 package get
 
 import (
-	"fmt"
 	"database/sql"
-	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/dharnitski/url-shortener/shortener"
@@ -13,11 +13,8 @@ import (
 // Handler proceses
 type Handler struct {
 	DB *sql.DB
-}
-
-// Response contains ShortenURL
-type Response struct {
-	URL string `json:"url"`
+	// App hosting domain with protocol, port, and slash - http://localhost:8080/
+	UIDomain string
 }
 
 // ServeHTTP serves requests
@@ -34,29 +31,19 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url, err := h.getURL(id)
+	path, err := h.getURL(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	if url == "" {
+	if path == "" {
 		http.Error(w, fmt.Sprintf("No url for %q", shorten), http.StatusNotFound)
 		return
 	}
 
-	response := Response{
-		URL: url,
-	}
-
-	js, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
+	// Return temporary redirect to enable landing URL chanage in the future
+	http.Redirect(w, r, fmt.Sprintf("%s%s", h.UIDomain, path), http.StatusFound)
 }
 
 // getURL returns full url from DB

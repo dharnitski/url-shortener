@@ -79,12 +79,18 @@ func main() {
 
 	router := mux.NewRouter()
 
-	// register new URL
+	// Rest API register new URL
 	router.Handle("/api/post", post.Handler{DB: db, UIDomain: uiDomain}).Methods("POST")
-	// return full url by its shorten form
-	router.Handle("/api/get/{shorten}", get.Handler{DB: db}).Methods("GET")
+	// HTTP handler to handle short urls
+	router.Handle("/{shorten:[0-9a-zA-Z]+}", get.Handler{DB: db}).Methods("GET")
 
 	// host SPA application
+	// important!!! SPA and short url handler shares the same subroute
+	// implementation works based on assumption that no spa resources match short url RegEx
+	// that is solid for current version of client side compiler
+	// it compiles all the files to assets with file extention like some_script.js or favicon.ico
+	// assets has to be moved to different folder if for any reason they match short url RegEx
+	// Issue will be exposed as Redirect or NotFound responses to asset routes 
 	spa := spaHandler{staticPath: "ui", indexPath: "index.html"}
 	router.PathPrefix("/").Handler(spa)
 
