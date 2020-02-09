@@ -36,7 +36,6 @@ jobs:
     steps:
       - checkout:
           path: ~/url-shortener
-      - run: sudo npm install -g @angular/cli
       - restore_cache:
           key: url-shortener-client-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run: npm install
