@@ -10,7 +10,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
 
 
 # 2) BUILD UI
-FROM node AS build-node 
+FROM node:13 AS build-node 
 WORKDIR /url-shortener
 
 # Copy both projects to the container's workspace.
