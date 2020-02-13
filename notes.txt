@@ -1,0 +1,16 @@
+This project designed to leave smallest possible footprint to make it run.
+
+It requires Docker and port 3306.
+
+CI and Testing results are published:
+https://coveralls.io/github/dharnitski/url-shortener
+https://circleci.com/gh/dharnitski/url-shortener
+
+Development and testing path intentionally require some additional manual software installation.
+
+These steps are simple enoughs to run manually without taking risk of breaking working stacks on developer machine.
+
+Please check readme files in root, client and server folders for more details.
+
+
+
